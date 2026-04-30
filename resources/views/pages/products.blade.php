@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.png">
+  <link rel="apple-touch-icon" href="/images/logo.png">
+  <title>Products - MOMOY'S Furniture</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <!-- Google model-viewer for AR/3D -->
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-container">
+      <a href="/" class="nav-brand">
+        <img src="/images/logo.png" alt="Momoy's Furniture Logo" class="nav-logo">
+        <span>Momoy's Furniture</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/products">Products</a></li>
+        <li><a href="/offers">Offers</a></li>
+        <li><a href="/services">Services</a></li>
+        <li class="auth-required"><a href="/cart">Cart (<span id="cart-count">0</span>)</a></li>
+        <li class="auth-required"><a href="/orders">My Orders</a></li>
+        <li class="auth-required"><a href="#" id="logout-btn">Log Out</a></li>
+        <li class="guest-only"><a href="/login">Log In</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="products-header">
+      <h1>All Products</h1>
+      <div>
+        <label for="category-filter">Filter by Category: </label>
+        <select id="category-filter" class="category-filter">
+          <option value="">All Categories</option>
+          <option value="Living Room">Living Room</option>
+          <option value="Bedroom">Bedroom</option>
+          <option value="Dining Room">Dining Room</option>
+          <option value="Office">Office</option>
+          <option value="Outdoor">Outdoor</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="message" class="message-container"></div>
+
+    <div id="products-container" class="product-grid">
+      <div class="spinner"></div>
+    </div>
+  </div>
+
+  <script src="/js/config.js"></script>
+<script src="/js/firebase-config.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/products.js"></script>
+  <script src="/js/mobile-nav.js"></script>
+
+  <!-- AR Viewer Modal -->
+  <div id="ar-modal">
+    <div>
+
+      <!-- Header -->
+      <div class="ar-modal-header">
+        <div>
+          <div class="ar-modal-header-label">3D Preview & AR</div>
+          <div id="ar-product-name" class="ar-modal-header-title"></div>
+        </div>
+        <button onclick="closeARViewer()" class="ar-modal-close-btn">&times;</button>
+      </div>
+
+      <!-- model-viewer -->
+      <div class="ar-modal-viewer">
+        <model-viewer
+          id="ar-model-viewer"
+          camera-controls
+          auto-rotate
+          auto-rotate-delay="1000"
+          rotation-per-second="30deg"
+          shadow-intensity="1"
+          shadow-softness="0.8"
+          environment-image="neutral"
+          exposure="1"
+          ar
+          ar-modes="webxr scene-viewer quick-look"
+          ar-scale="auto"
+          ar-placement="floor"
+          loading="eager"
+          reveal="auto"
+        >
+          <!-- AR button slot -->
+          <button slot="ar-button" id="ar-launch-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            Place in Your Room
+          </button>
+
+          <!-- Loading poster -->
+          <div slot="progress-bar" style="display:none;"></div>
+        </model-viewer>
+
+        <!-- No-model fallback (shown when no .glb exists) -->
+        <div id="ar-no-model">
+          <div class="ar-no-model-icon">📦</div>
+          <div class="ar-no-model-title">3D Model Coming Soon</div>
+          <div class="ar-no-model-text">A 3D model for this product hasn't been uploaded yet.<br>Check back soon or contact us for a virtual consultation.</div>
+        </div>
+      </div>
+
+      <!-- Controls info bar -->
+      <div class="ar-modal-controls">
+        <span class="ar-control-hint">🖱️ Drag to rotate</span>
+        <span class="ar-control-hint">🔍 Scroll to zoom</span>
+        <span class="ar-control-hint">✋ Two fingers to pan</span>
+        <span class="ar-control-hint mobile" id="ar-mobile-hint">📱 Tap "Place in Room" for AR</span>
+      </div>
+
+      <!-- Marker AR button -->
+      <div class="ar-marker-section">
+        <div>
+          <div class="ar-marker-text-label">🎯 Marker AR Mode</div>
+          <div class="ar-marker-text-desc">Print or display the Hiro marker — the 3D model locks onto it and tracks wherever you move it.</div>
+        </div>
+        <button id="open-marker-ar-btn" onclick="openMarkerAR()" class="ar-marker-btn">
+          Launch Marker AR →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // AR Viewer Functions
+    const PLACEHOLDER_MODEL = 'models/sofa.glb';
+
+    function openARViewer(productId, productName, modelUrl, imageUrl) {
+      try {
+        const modal    = document.getElementById('ar-modal');
+        const viewer   = document.getElementById('ar-model-viewer');
+        const noModel  = document.getElementById('ar-no-model');
+        const nameEl   = document.getElementById('ar-product-name');
+        const mobileHint = document.getElementById('ar-mobile-hint');
+
+        if (!modal || !viewer || !nameEl) {
+          console.error('AR Modal elements not found', { modal: !!modal, viewer: !!viewer, nameEl: !!nameEl });
+          return;
+        }
+
+        console.log('Opening AR Viewer for:', productName, { modelUrl, imageUrl });
+
+        nameEl.textContent = productName;
+
+        // Use product's modelUrl, fall back to placeholder
+        const src = modelUrl && modelUrl.trim() !== '' ? modelUrl : PLACEHOLDER_MODEL;
+        console.log('Using model source:', src);
+
+        viewer.setAttribute('src', src);
+        viewer.setAttribute('poster', imageUrl);
+        viewer.setAttribute('alt', `3D model of ${productName}`);
+
+        // Show/hide no-model overlay
+        noModel.style.display = 'none';
+        viewer.style.display = 'block';
+
+        // Show AR hint on mobile
+        if (/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)) {
+          mobileHint.style.display = 'flex';
+        }
+
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        console.log('AR Modal opened successfully');
+      } catch (error) {
+        console.error('Error opening AR Viewer:', error);
+      }
+    }
+
+    function closeARViewer() {
+      const modal  = document.getElementById('ar-modal');
+      const viewer = document.getElementById('ar-model-viewer');
+      modal.style.display = 'none';
+      document.body.style.overflow = '';
+      // Stop the model from loading/animating when closed
+      viewer.removeAttribute('src');
+    }
+
+    // Open dedicated marker AR page
+    function openMarkerAR() {
+      const name  = document.getElementById('ar-product-name').textContent || '';
+      const model = document.getElementById('ar-model-viewer').getAttribute('src') || '';
+      const poster = document.getElementById('ar-model-viewer').getAttribute('poster') || '';
+      const params = new URLSearchParams({ name, model, image: poster });
+      window.open(`/ar-viewer?${params.toString()}`, '_blank');
+    }
+
+    // Close on backdrop click
+    document.getElementById('ar-modal').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('ar-modal')) closeARViewer();
+    });
+
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && document.getElementById('ar-modal').style.display === 'flex') closeARViewer();
+    });
+  </script>
+
+  <script>
+    // Auto-open product modal if ?id= is in the URL (e.g. coming from featured products)
+    async function autoOpenProductFromURL() {
+      const params = new URLSearchParams(window.location.search);
+      const productId = params.get('id');
+      if (!productId) return;
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/products/${productId}`);
+        if (!res.ok) return;
+        const product = await res.json();
+        // Wait for products to render first, then open modal
+        setTimeout(() => viewProductDetails(product), 600);
+      } catch (e) {
+        console.error('Auto-open product error:', e);
+      }
+    }
+
+    // Handle logout button
+    document.addEventListener('DOMContentLoaded', () => {
+      const logoutBtn = document.getElementById('logout-btn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          logoutUser();
+        });
+      }
+    });
+
+    // Hide nav on scroll
+    (function () {
+      const nav = document.querySelector('nav');
+      let lastY = window.scrollY;
+      let ticking = false;
+      window.addEventListener('scroll', () => {
+        if (!ticking) {
+          window.requestAnimationFrame(() => {
+            const currentY = window.scrollY;
+            if (currentY > lastY && currentY > 80) {
+              nav.classList.add('nav-hidden');
+            } else if (currentY < lastY) {
+              nav.classList.remove('nav-hidden');
+            }
+            lastY = currentY;
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }, { passive: true });
+    })();
+
+    // Run after products.js initializes
+    window.addEventListener('DOMContentLoaded', () => {
+      autoOpenProductFromURL();
+      initializeCategoryFilter();
+
+      // Auto-select category from URL ?category=
+      const params = new URLSearchParams(window.location.search);
+      const cat = params.get('category');
+      if (cat) {
+        const filter = document.getElementById('category-filter');
+        if (filter) {
+          filter.value = cat;
+          loadProducts(cat);
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>

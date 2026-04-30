@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.png">
+<link rel="apple-touch-icon" href="/images/logo.png">
+  <title>Add Product - MOMOY'S Furniture Admin</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+
+/* Forms */
+.form-container {
+  max-width: 420px;
+  margin: 4rem auto;
+  padding: 2.5rem;
+  
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  
+  color: #000000;
+}
+
+.form-container p {
+  color: #000000;
+}
+
+.form-container p a {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+
+  background: rgba(255, 255, 255, 0.85);
+  color: #000;
+  font-weight: 600;
+  text-decoration: none;
+
+  transition: all 0.3s ease;
+}
+
+.form-container p a:hover {
+  background: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+}
+
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+    .variant-item {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      border: 2px solid #ecf0f1;
+      position: relative;
+    }
+    
+    .variant-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #e0e0e0;
+    }
+    
+    .remove-variant-btn {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    
+    .remove-variant-btn:hover {
+      background: #c0392b;
+    }
+    
+    .variant-preview {
+      width: 100%;
+      max-width: 200px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 5px;
+      margin-top: 0.5rem;
+    }
+    
+    .add-variant-btn {
+      width: 100%;
+      padding: 1rem;
+      margin-top: 1rem;
+      background: #3498db;
+      color: white;
+      border: 2px dashed #2980b9;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+    
+    .add-variant-btn:hover {
+      background: #2980b9;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-container">
+      <a href="/admin/dashboard" class="nav-brand">
+        <img src="/images/logo.png" alt="Momoy's Furniture Logo" class="nav-logo">
+        <span>Momoy's Furniture</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/admin/dashboard">Dashboard</a></li>
+        <li><a href="/admin/add-product">Add Product</a></li>
+        <li><a href="/admin/manage-orders">Manage Orders</a></li>
+        <li><a href="#" id="logout-btn">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="form-container" style="max-width: 800px;">
+      <h2>Add New Product</h2>
+      
+      <form id="add-product-form">
+        <h3 style="margin-top: 2rem; margin-bottom: 1rem;">Basic Information</h3>
+        
+        <div class="form-group">
+          <label for="name">Product Name *</label>
+          <input type="text" id="name" required placeholder="e.g., Modern L-Shape Sofa">
+        </div>
+        
+        <div class="form-group">
+          <label for="description">Description *</label>
+          <textarea id="description" required placeholder="Describe the product..."></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="category">Category *</label>
+          <select id="category" required>
+            <option value="">Select Category</option>
+            <option value="Living Room">Living Room</option>
+            <option value="Bedroom">Bedroom</option>
+            <option value="Dining Room">Dining Room</option>
+            <option value="Office">Office</option>
+            <option value="Outdoor">Outdoor</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="price">Base Price (₱) *</label>
+          <input type="number" id="price" required min="0" step="0.01" placeholder="0.00">
+          <small style="color: #7f8c8d; display: block; margin-top: 0.5rem;">
+            This is the starting/default price. Individual variants can have different prices.
+          </small>
+        </div>
+        
+        <div class="form-group">
+          <label for="imageUrl">Default Image URL (Google Drive) *</label>
+          <input type="url" id="imageUrl" required placeholder="https://drive.google.com/uc?export=view&id=FILE_ID">
+          <small style="color: #7f8c8d; display: block; margin-top: 0.5rem;">
+            Upload to Google Drive, get shareable link, convert to: https://drive.google.com/uc?export=view&id=FILE_ID
+          </small>
+          <img id="default-image-preview" style="display: none; max-width: 200px; margin-top: 1rem; border-radius: 8px;">
+        </div>
+
+        <div class="form-group">
+          <label for="modelUrl">3D Model URL / .glb Path</label>
+          <input type="text" id="modelUrl" value="models/sofa.glb" placeholder="models/sofa.glb or https://example.com/model.glb">
+          <small style="color: #7f8c8d; display: block; margin-top: 0.5rem;">
+            You can use a file inside the website like <code>models/sofa.glb</code> or an external direct .glb link.
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label for="stock">Base Stock Quantity *</label>
+          <input type="number" id="stock" required min="0" placeholder="0">
+          <small style="color: #7f8c8d; display: block; margin-top: 0.5rem;">
+            Total stock across all variants (or stock if no variants)
+          </small>
+        </div>
+        
+        <hr style="margin: 2rem 0; border: none; border-top: 2px solid #ecf0f1;">
+        
+        <h3 style="margin-bottom: 1rem;">Product Variants (Optional)</h3>
+        <p style="color: #7f8c8d; margin-bottom: 1rem;">
+          Add variants like different colors, sizes, or materials. Each variant can have its own price, stock, and image.
+        </p>
+        
+        <div id="variants-container"></div>
+        
+        <button type="button" class="add-variant-btn" onclick="addVariant()">
+          ➕ Add Variant
+        </button>
+        
+        <hr style="margin: 2rem 0; border: none; border-top: 2px solid #ecf0f1;">
+        
+        <div style="display: flex; gap: 1rem;">
+          <button type="submit" class="btn btn-primary" style="flex: 1;">Add Product</button>
+          <a href="/admin/dashboard" class="btn btn-secondary" style="flex: 1; text-align: center;">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+<script src="/js/config.js"></script>
+  <script src="/js/firebase-config.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/admin.js"></script>
+  <script src="/js/mobile-nav.js"></script>
+
+  <script>
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        await protectAdminPage();
+      } else {
+        window.location.href = '/login';
+      }
+    });
+    
+    let variantCount = 0;
+    
+    // Add variant
+    function addVariant() {
+      variantCount++;
+      const container = document.getElementById('variants-container');
+      
+      const variantDiv = document.createElement('div');
+      variantDiv.className = 'variant-item';
+      variantDiv.id = `variant-${variantCount}`;
+      
+      variantDiv.innerHTML = `
+        <div class="variant-header">
+          <h4 style="margin: 0;">Variant ${variantCount}</h4>
+          <button type="button" class="remove-variant-btn" onclick="removeVariant(${variantCount})">
+            🗑️ Remove
+          </button>
+        </div>
+        
+        <div class="form-group">
+          <label>Variant Name *</label>
+          <input type="text" class="variant-name" required placeholder="e.g., Gray Fabric, Large Size">
+        </div>
+        
+        <div class="form-group">
+          <label>Price (₱) *</label>
+          <input type="number" class="variant-price" required min="0" step="0.01" placeholder="0.00">
+        </div>
+        
+        <div class="form-group">
+          <label>Stock *</label>
+          <input type="number" class="variant-stock" required min="0" placeholder="0">
+        </div>
+        
+        <div class="form-group">
+          <label>Image URL (Google Drive) *</label>
+          <input type="url" class="variant-image" required placeholder="https://drive.google.com/uc?export=view&id=FILE_ID" onchange="previewVariantImage(${variantCount}, this.value)">
+          <img id="variant-preview-${variantCount}" class="variant-preview" style="display: none;">
+        </div>
+      `;
+      
+      container.appendChild(variantDiv);
+    }
+    
+    // Remove variant
+    function removeVariant(id) {
+      const variant = document.getElementById(`variant-${id}`);
+      if (variant && confirm('Remove this variant?')) {
+        variant.remove();
+      }
+    }
+    
+    // Preview variant image
+    function previewVariantImage(id, url) {
+      const img = document.getElementById(`variant-preview-${id}`);
+      if (img && url) {
+        img.src = url;
+        img.style.display = 'block';
+        img.onerror = () => img.style.display = 'none';
+      }
+    }
+    
+    // Preview default image
+    document.getElementById('imageUrl').addEventListener('change', (e) => {
+      const preview = document.getElementById('default-image-preview');
+      if (e.target.value) {
+        preview.src = e.target.value;
+        preview.style.display = 'block';
+        preview.onerror = () => preview.style.display = 'none';
+      }
+    });
+    
+    // Submit form
+    document.getElementById('add-product-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      const originalText = submitBtn.textContent;
+      submitBtn.textContent = 'Adding Product...';
+      submitBtn.disabled = true;
+      
+      try {
+        // Get basic product data
+        const productData = {
+          name: document.getElementById('name').value,
+          description: document.getElementById('description').value,
+          price: parseFloat(document.getElementById('price').value),
+          category: document.getElementById('category').value,
+          imageUrl: document.getElementById('imageUrl').value,
+          modelUrl: document.getElementById('modelUrl').value.trim(),
+          stock: parseInt(document.getElementById('stock').value)
+        };
+        
+        // Get variants
+        const variants = [];
+        const variantItems = document.querySelectorAll('.variant-item');
+        
+        variantItems.forEach((item, index) => {
+          const name = item.querySelector('.variant-name').value;
+          const price = parseFloat(item.querySelector('.variant-price').value);
+          const stock = parseInt(item.querySelector('.variant-stock').value);
+          const imageUrl = item.querySelector('.variant-image').value;
+          
+          if (name && price && stock >= 0 && imageUrl) {
+            variants.push({
+              id: `v${index + 1}`,
+              name,
+              price,
+              stock,
+              imageUrl
+            });
+          }
+        });
+        
+        // Add variants if any
+        if (variants.length > 0) {
+          productData.variants = variants;
+        }
+        
+        console.log('Submitting product:', productData);
+        
+        const response = await authenticatedFetch(`/products`, {
+          method: 'POST',
+          body: JSON.stringify(productData)
+        });
+        
+        if (response.ok) {
+          alert(`✅ Product added successfully!\n\n${variants.length > 0 ? `With ${variants.length} variants` : 'Without variants'}`);
+          window.location.href = '/admin/dashboard';
+        } else {
+          const error = await response.json();
+          alert('Failed to add product: ' + error.error);
+          submitBtn.textContent = originalText;
+          submitBtn.disabled = false;
+        }
+      } catch (error) {
+        console.error('Error adding product:', error);
+        alert('Failed to add product. Please try again.');
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

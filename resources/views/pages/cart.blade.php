@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopping Cart - MOMOY'S Furniture</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .cart-empty {
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+
+    .cart-empty img {
+      width: 200px;
+      opacity: 0.5;
+      margin-bottom: 2rem;
+    }
+
+    .quantity-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .quantity-btn {
+      width: 35px;
+      height: 35px;
+      border: 1px solid #bdc3c7;
+      background: white;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+
+    .quantity-btn:hover {
+      background: #ecf0f1;
+      border-color: #2c3e50;
+    }
+
+    .quantity-display {
+      font-size: 1.1rem;
+      font-weight: 600;
+      min-width: 30px;
+      text-align: center;
+    }
+
+    .cart-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .cart-item {
+        flex-direction: column;
+        text-align: center;
+      }
+      .cart-item-image {
+        width: 100%;
+        max-width: 200px;
+      }
+    }
+
+    /* ── Agreement Modal ── */
+    #agreement-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    #agreement-modal.open {
+      display: flex;
+    }
+
+    .agreement-box {
+      background: #fff;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 620px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      overflow: hidden;
+    }
+
+    .agreement-header {
+      padding: 1.5rem 1.75rem 1rem;
+      border-bottom: 1px solid #ecf0f1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .agreement-header h2 {
+      margin: 0;
+      font-size: 1.2rem;
+      color: #2c3e50;
+    }
+
+    .agreement-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #7f8c8d;
+      line-height: 1;
+      padding: 0.25rem 0.5rem;
+    }
+
+    .agreement-close:hover { color: #2c3e50; }
+
+    .agreement-body {
+      padding: 1.25rem 1.75rem;
+      overflow-y: auto;
+      flex: 1;
+      font-size: 0.92rem;
+      color: #444;
+      line-height: 1.7;
+    }
+
+    .agreement-body p.intro {
+      margin: 0 0 1.25rem;
+      color: #555;
+    }
+
+    .agreement-section { margin-bottom: 1.25rem; }
+
+    .agreement-section h4 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #2c3e50;
+      margin: 0 0 0.35rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .agreement-section p { margin: 0; }
+
+    .agreement-footer {
+      padding: 1.25rem 1.75rem;
+      border-top: 1px solid #ecf0f1;
+      flex-shrink: 0;
+      background: #fafafa;
+    }
+
+    .agreement-checkbox-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .agreement-checkbox-row input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      flex-shrink: 0;
+      cursor: pointer;
+      accent-color: #2c3e50;
+    }
+
+    .agreement-checkbox-row label {
+      font-size: 0.9rem;
+      color: #444;
+      cursor: pointer;
+      line-height: 1.5;
+    }
+
+    /* ── Confirm button — clean two-state, no pointer-events hacks ── */
+    #confirm-checkout-btn {
+      width: 100%;
+      padding: 0.9rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
+      display: block;
+      cursor: not-allowed;
+      background: #bdc3c7;
+      color: #7f8c8d;
+      opacity: 0.6;
+      transition: background 0.2s, color 0.2s, opacity 0.2s;
+      font-family: inherit;
+    }
+
+    #confirm-checkout-btn.enabled {
+      cursor: pointer;
+      background: #2c3e50;
+      color: #fff;
+      opacity: 1;
+    }
+
+    #confirm-checkout-btn.enabled:hover {
+      background: #34495e;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-container">
+      <a href="/" class="nav-brand">
+        <img src="/images/logo.png" alt="Momoy's Furniture Logo" class="nav-logo">
+        <span>Momoy's Furniture</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/products">Products</a></li>
+        <li><a href="/cart">Cart (<span id="cart-count">0</span>)</a></li>
+        <li><a href="/orders">My Orders</a></li>
+        <li><a href="#" id="logout-btn">Log Out</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1>Shopping Cart</h1>
+
+    <div id="message" style="display: none; margin: 1rem 0;"></div>
+
+    <div id="cart-items"></div>
+
+    <div id="cart-summary" class="cart-summary" style="display: none;">
+      <h2>Order Summary</h2>
+
+      <div style="border-top: 1px solid #ecf0f1; margin: 1rem 0; padding-top: 1rem;">
+        <div class="cart-summary-row" style="margin: 0.75rem 0; font-size: 1.1rem;">
+          <span>Subtotal:</span>
+          <strong id="subtotal">₱0</strong>
+        </div>
+        <div class="cart-summary-row" style="margin: 0.75rem 0; font-size: 1.1rem;">
+          <span>Total Items:</span>
+          <strong id="total-items">0</strong>
+        </div>
+      </div>
+
+      <div style="border-top: 2px solid #2c3e50; margin: 1rem 0; padding-top: 1rem;">
+        <div class="cart-summary-row" style="margin: 1rem 0; font-size: 1.3rem;">
+          <span><strong>Total Amount:</strong></span>
+          <strong id="total-amount" style="color: #e67e22;">₱0</strong>
+        </div>
+        <div class="cart-summary-row" style="margin: 1rem 0; background: #fff3cd; padding: 1rem; border-radius: 5px;">
+          <span>Down Payment (30%):</span>
+          <strong id="down-payment" style="color: #856404;">₱0</strong>
+        </div>
+        <div class="cart-summary-row" style="margin: 1rem 0; background: #d1ecf1; padding: 1rem; border-radius: 5px;">
+          <span>Remaining Balance:</span>
+          <strong id="remaining-balance" style="color: #0c5460;">₱0</strong>
+        </div>
+      </div>
+
+      <div style="background: #e8f5e9; padding: 1rem; border-radius: 5px; margin: 1rem 0;">
+        <p style="margin: 0; font-size: 0.95rem; color: #2e7d32;">
+          ✓ Pay only 30% down payment now<br>
+          ✓ Pay remaining balance upon delivery<br>
+          ✓ Free delivery tracking
+        </p>
+      </div>
+
+      <button id="checkout-btn" class="btn btn-primary" style="width: 100%; margin-top: 1rem; padding: 1rem; font-size: 1.1rem;">
+        Proceed to Checkout
+      </button>
+
+      <p style="margin-top: 1rem; text-align: center; color: #7f8c8d; font-size: 0.9rem;">
+        Secure checkout • Pay remaining balance on delivery
+      </p>
+    </div>
+
+    <div style="text-align: center; margin-top: 2rem;">
+      <a href="/products" class="btn btn-secondary">Continue Shopping</a>
+    </div>
+  </div>
+
+  <!-- ── User Agreement Modal ── -->
+  <div id="agreement-modal" role="dialog" aria-modal="true" aria-labelledby="agreement-title">
+    <div class="agreement-box">
+
+      <div class="agreement-header">
+        <h2 id="agreement-title">Terms &amp; Conditions</h2>
+        <button type="button" class="agreement-close" id="agreement-close-btn" aria-label="Close">&times;</button>
+      </div>
+
+      <div class="agreement-body">
+        <p class="intro">By placing an order on our website, you agree to the following terms and conditions:</p>
+
+        <div class="agreement-section">
+          <h4>1. Custom Orders</h4>
+          <p>For customized furniture orders, clients may provide specific requirements such as design, size, materials, and finishes. All custom details must be finalized and approved before production begins. Once confirmed, changes may not be accepted or may incur additional charges.</p>
+        </div>
+
+        <div class="agreement-section">
+          <h4>2. Delivery Terms &amp; Timeframe</h4>
+          <p>Delivery timelines will be provided upon order confirmation and may vary depending on the complexity and availability of materials. While we strive to meet all deadlines, delays may occur due to unforeseen circumstances such as supply shortages, weather conditions, or logistics issues. Customers will be notified of any significant changes in delivery schedules.</p>
+        </div>
+
+        <div class="agreement-section">
+          <h4>3. Return / Exchange Policy</h4>
+          <p>Returns or exchanges are only accepted for items with manufacturing defects or if the delivered product does not match the approved specifications. Requests must be made within a reasonable period after delivery. Customized furniture and items that meet the agreed design and quality standards are not eligible for return or exchange.</p>
+        </div>
+
+        <div class="agreement-section">
+          <h4>4. Down Payment Policy</h4>
+          <p>A down payment is required to confirm all orders. This down payment is <strong>strictly non-refundable</strong>, as it covers initial production costs, materials, and labor.</p>
+        </div>
+      </div>
+
+      <div class="agreement-footer">
+        <div class="agreement-checkbox-row">
+          <input type="checkbox" id="agree-checkbox">
+          <label for="agree-checkbox">I have read and agree to the Terms &amp; Conditions, including the non-refundable down payment policy.</label>
+        </div>
+        <button type="button" id="confirm-checkout-btn">
+          Confirm &amp; Proceed to Checkout
+        </button>
+      </div>
+
+    </div>
+  </div>
+  <script src="/js/config.js"></script>
+  <script src="/js/firebase-config.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/products.js"></script>
+  <script src="/js/cart.js"></script>
+  <script src="/js/mobile-nav.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.png">
+  <link rel="apple-touch-icon" href="/images/logo.png">
+  <title>Admin Dashboard - MOMOY'S Furniture</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .admin-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      display: block;
+      background: #fff;
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-decoration: none;
+      color: inherit;
+      border: 1px solid transparent;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+      border-color: rgba(44, 62, 80, 0.08);
+    }
+
+    .stat-card h3 {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #888;
+      margin: 0 0 0.5rem 0;
+      font-weight: 600;
+    }
+
+    .stat-card p {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin: 0;
+      color: #1a1a2e;
+      line-height: 1;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav>
+    <div class="nav-container">
+      <a href="/admin/dashboard" class="nav-brand">
+        <img src="/images/logo.png" alt="Momoy's Furniture Logo" class="nav-logo">
+        <span>Momoy's Furniture</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/admin/dashboard">Dashboard</a></li>
+        <li><a href="/admin/add-product">Add Product</a></li>
+        <li><a href="/admin/manage-orders">Manage Orders</a></li>
+        <li><a href="/" target="_blank">View Site</a></li>
+        <li><a href="#" id="logout-btn">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="container">
+    <h1>Admin Dashboard</h1>
+
+    <!-- Dashboard Stats -->
+    <div class="admin-stats">
+
+      <a class="stat-card" href="/admin/metric-detail?metric=total-earned">
+        <h3>Total Earned</h3>
+        <p id="total-earned">₱-</p>
+      </a>
+      <a class="stat-card" href="/admin/metric-detail?metric=completed-purchase">
+        <h3>Completed Purchase</h3>
+        <p id="completed-purchase">-</p>
+      </a>
+      <a class="stat-card" href="/admin/metric-detail?metric=receivable-amount">
+        <h3>Receivable Amount</h3>
+        <p id="receivable-amount">₱-</p>
+      </a>
+      <a class="stat-card" href="/admin/metric-detail?metric=approved-orders">
+        <h3>Approved Orders</h3>
+        <p id="approved-orders">-</p>
+      </a>
+      <a class="stat-card" href="/admin/metric-detail?metric=completed-orders">
+        <h3>Completed Orders</h3>
+        <p id="completed-orders">-</p>
+      </a>
+      <a class="stat-card" href="/admin/metric-detail?metric=pending-orders">
+        <h3>Pending Orders</h3>
+        <p id="pending-orders">-</p>
+      </a>
+      <a class="stat-card" href="/admin/metric-detail?metric=listed-products">
+        <h3>Listed Products</h3>
+        <p id="listed-products">-</p>
+      </a>
+      <a class="stat-card" href="/admin/metric-detail?metric=listed-brands">
+        <h3>Listed Brands</h3>
+        <p id="listed-brands">-</p>
+      </a>
+      <a class="stat-card" href="/admin/metric-detail?metric=registered-users">
+        <h3>Registered Users</h3>
+        <p id="registered-users">-</p>
+      </a>
+      <a class="stat-card" href="/admin/metric-detail?metric=queries">
+        <h3>Queries</h3>
+        <p id="total-queries">-</p>
+      </a>
+      <a class="stat-card" href="/admin/metric-detail?metric=testimonials">
+        <h3>Testimonials</h3>
+        <p id="total-testimonials">-</p>
+      </a>
+
+    </div>
+
+    <!-- Products Table -->
+    <div style="margin-top: 3rem;">
+      <h2>Products</h2>
+      <div style="margin-bottom: 1rem;">
+        <a href="/admin/add-product" class="btn btn-primary">Add New Product</a>
+      </div>
+
+      <div class="data-table">
+        <table id="products-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="5" style="text-align: center;">Initializing...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- App JS -->
+<script src="/js/config.js"></script>
+  <script src="/js/firebase-config.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/admin.js"></script>
+  <script src="/js/mobile-nav.js"></script>
+
+  <script>
+    let authChecked = false;
+
+    auth.onAuthStateChanged(async (user) => {
+      if (authChecked) return;
+      authChecked = true;
+
+      console.log('Dashboard: Auth state changed:', user ? user.email : 'Not logged in');
+
+      if (!user) {
+        window.location.href = '/login';
+        return;
+      }
+
+      try {
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        const isAdmin = userDoc.exists && userDoc.data().role === 'admin';
+
+        if (!isAdmin) {
+          alert('Access denied. Admin only.');
+          window.location.href = '/';
+          return;
+        }
+
+        loadDashboardStats();
+        loadAdminProducts();
+
+      } catch (error) {
+        console.error('Error verifying admin status:', error);
+        alert('Error verifying admin status');
+        window.location.href = '/';
+      }
+    });
+
+    document.getElementById('logout-btn')?.addEventListener('click', async () => {
+      await auth.signOut();
+      window.location.href = '/login';
+    });
+  </script>
+</body>
+</html>

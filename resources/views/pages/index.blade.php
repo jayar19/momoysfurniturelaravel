@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.png">
+  <link rel="apple-touch-icon" href="/images/logo.png">
+  <title>MOMOY'S Furniture - Home</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <!-- Google model-viewer for AR/3D -->
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav>
+    <div class="nav-container">
+      <a href="/" class="nav-brand">
+        <img src="/images/logo.png" alt="Momoy's Furniture Logo" class="nav-logo">
+        <span>Momoy's Furniture</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/products">Products</a></li>
+        <li><a href="/offers">Offers</a></li>
+        <li><a href="/services">Services</a></li>
+        <li class="auth-required"><a href="/cart">Cart (<span id="cart-count">0</span>)</a></li>
+        <li class="auth-required"><a href="/orders">My Orders</a></li>
+        <li class="auth-required"><a href="#" id="logout-btn">Log Out</a></li>
+        <li class="guest-only"><a href="/login">Log In</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Category Strip -->
+  <div class="cat-strip">
+    <div class="cat-strip-inner">
+      <a href="/products?category=Living Room" class="cat-chip"><img class="cat-icon" src="/images/modernsofa.jpg"   alt="Living Room">Living Room</a>
+      <a href="/products?category=Bedroom"     class="cat-chip"><img class="cat-icon" src="/images/couch.png"        alt="Bedroom">Bedroom</a>
+      <a href="/products?category=Dining Room" class="cat-chip"><img class="cat-icon" src="/images/classictable.jpg" alt="Dining Room">Dining Room</a>
+      <a href="/products?category=Office"      class="cat-chip"><img class="cat-icon" src="/images/modernchair.jpg"  alt="Office">Office</a>
+      <a href="/products?category=Outdoor"     class="cat-chip"><img class="cat-icon" src="/images/bg2.jpg"          alt="Outdoor">Outdoor</a>
+      <a href="/products"                      class="cat-chip"><img class="cat-icon" src="/images/logo.png"         alt="All Products">All Products</a>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-content">
+      <div class="hero-text">
+        <span class="hero-tag">Quality Since Day One</span>
+        <h1>Welcome to MOMOY'S Furniture</h1>
+        <p>Quality furniture for your home with flexible payment options</p>
+        <div class="hero-actions">
+          <a href="/products" class="btn btn-primary">Shop Now</a>
+          <a href="#featured" class="btn btn-secondary">View Collection</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Featured Products -->
+  <section class="featured-section" id="featured">
+    <div class="featured-header">
+      <h2>Featured Products</h2>
+      <a href="/products" class="section-link">View all →</a>
+    </div>
+    <div class="featured-grid" id="featured-grid">
+      <!-- Dynamically populated by JS -->
+      <div class="featured-loading">Loading products...</div>
+    </div>
+  </section>
+
+  <!-- Promo Banners (new) -->
+  <div class="promo-section">
+    <div class="promo-grid">
+      <a href="/products?category=Bedroom" class="promo-card">
+        <img src="/images/couch.png" alt="Bedroom">
+        <div class="promo-content">
+          <span class="promo-label">Bedroom</span>
+          <h3 class="promo-title">Rest Better,<br>Live Better</h3>
+          <span class="promo-btn">Shop Bedroom →</span>
+        </div>
+      </a>
+      <a href="/products?category=Dining Room" class="promo-card">
+        <img src="/images/classictable.jpg" alt="Dining">
+        <div class="promo-content">
+          <span class="promo-label">Dining</span>
+          <h3 class="promo-title">Gather Around<br>the Table</h3>
+          <span class="promo-btn">Shop Dining →</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Why Choose Us (original structure preserved) -->
+  <section class="why-section">
+    <div class="why-inner">
+      <h2>Why Choose Us?</h2>
+      <div class="why-grid product-grid">
+        <div class="product-card">
+          <div class="product-info">
+            <h3>Quality Furniture</h3>
+            <p>Handpicked furniture pieces that combine style and durability for your home.</p>
+          </div>
+        </div>
+        <div class="product-card">
+          <div class="product-info">
+            <h3>Flexible Payment</h3>
+            <p>Pay only 30% down payment and settle the balance upon delivery.</p>
+          </div>
+        </div>
+        <div class="product-card">
+          <div class="product-info">
+            <h3>Track Delivery</h3>
+            <p>Real-time delivery tracking with Google Maps integration.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Payment Band (replaces "Ready to Get Started") -->
+  <section class="payment-band">
+    <div class="payment-band-inner">
+      <h2>Simple, Flexible Payment</h2>
+      <p>We believe great furniture should be accessible to everyone. Bring home your dream furniture today with our easy payment scheme.</p>
+      <div class="payment-steps">
+        <div class="payment-step"><span class="step-num">1</span> Choose your furniture</div>
+        <div class="payment-step"><span class="step-num">2</span> Pay 30% down payment</div>
+        <div class="payment-step"><span class="step-num">3</span> Receive &amp; pay balance</div>
+      </div>
+      <a href="/products" class="btn btn-primary">Start Shopping</a>
+    </div>
+  </section>
+
+  <!-- Footer (new) -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div>
+          <div class="footer-brand-name">MOMOY'S Furniture</div>
+          <p class="footer-desc">Quality furniture for every Filipino home. Handcrafted pieces built to last, with flexible payment options that fit any budget.</p>
+        </div>
+        <div>
+          <div class="footer-col-title">Shop</div>
+          <ul class="footer-links">
+            <li><a href="/products">All Products</a></li>
+            <li><a href="/products?category=sofa">Sofas</a></li>
+            <li><a href="/products?category=bedroom">Bedroom</a></li>
+            <li><a href="/products?category=dining">Dining</a></li>
+            <li><a href="/products?category=office">Office</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-col-title">Account</div>
+          <ul class="footer-links">
+            <li><a href="/orders">Track My Order</a></li>
+            <li><a href="/cart">My Cart</a></li>
+            <li><a href="/login?tab=register">Create Account</a></li>
+            <li><a href="/login">Login</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-col-title">Help</div>
+          <ul class="footer-links">
+            <li><a href="/payment-options">Payment Options</a></li>
+            <li><a href="/delivery-info">Delivery Info</a></li>
+            <li><a href="/return-policy">Return Policy</a></li>
+            <li><a href="/contact">Contact Us</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span class="footer-copy">© 2025 MOMOY'S Furniture. All rights reserved.</span>
+        <div class="pay-chips">
+          <span class="pay-chip">GCash</span>
+          <span class="pay-chip">Cash</span>
+          <span class="pay-chip">COD</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/config.js"></script>
+  <script src="/js/firebase-config.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/products.js"></script>
+  <script src="/js/mobile-nav.js"></script>
+
+  <script>
+    // Handle logout button
+    document.addEventListener('DOMContentLoaded', () => {
+      const logoutBtn = document.getElementById('logout-btn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          logoutUser();
+        });
+      }
+    });
+
+    // Load featured products from API
+    async function loadFeaturedProducts() {
+      const grid = document.getElementById('featured-grid');
+      if (!grid) return;
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/products`);
+        if (!res.ok) throw new Error('Failed to fetch');
+        const products = await res.json();
+
+        // Show up to 6 products
+        const featured = products.slice(0, 6);
+
+        if (featured.length === 0) {
+          grid.innerHTML = '<p style="color:#999;text-align:center;">No products available.</p>';
+          return;
+        }
+
+        grid.innerHTML = featured.map(p => `
+          <div class="fp-card" onclick="window.location.href='/products?id=${p.id}'">
+            <div class="fp-img-wrap">
+              <img src="${p.imageUrl || '/images/modernsofa.jpg'}" alt="${p.name}" onerror="this.src='/images/modernsofa.jpg'">
+              <div class="fp-hotspot" onclick="event.stopPropagation(); window.location.href='/products?id=${p.id}'">
+                <div class="fp-tooltip">
+                  <span class="fp-tooltip-name">${p.name}</span>
+                  <span class="fp-tooltip-price">&#8369;${Number(p.price).toLocaleString()}</span>
+                </div>
+                <div class="fp-dot"></div>
+              </div>
+              <button class="fp-ar-btn" onclick="event.stopPropagation(); openARViewer('${p.id}', '${p.name.replace(/'/g,"\\'")}', '${p.modelUrl || ''}', '${p.imageUrl || '/images/modernsofa.jpg'}')" title="View in AR / 3D">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                  <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                  <line x1="12" y1="22.08" x2="12" y2="12"/>
+                </svg>
+                View in 3D / AR
+              </button>
+            </div>
+          </div>
+        `).join('');
+      } catch (e) {
+        console.error('Featured products error:', e);
+        grid.innerHTML = '<p style="color:#999;text-align:center;">Could not load products.</p>';
+      }
+    }
+
+    // Run after config.js sets API_BASE_URL
+    window.addEventListener('DOMContentLoaded', () => {
+      if (typeof API_BASE_URL !== 'undefined') {
+        loadFeaturedProducts();
+      } else {
+        // Wait a tick for config.js to load
+        setTimeout(loadFeaturedProducts, 100);
+      }
+    });
+  </script>
+
+  <!-- AR Viewer Modal -->
+  <div id="ar-modal">
+    <div>
+
+      <!-- Header -->
+      <div class="ar-modal-header">
+        <div>
+          <div class="ar-modal-header-label">3D Preview & AR</div>
+          <div id="ar-product-name" class="ar-modal-header-title"></div>
+        </div>
+        <button onclick="closeARViewer()" class="ar-modal-close-btn">&times;</button>
+      </div>
+
+      <!-- model-viewer -->
+      <div class="ar-modal-viewer">
+        <model-viewer
+          id="ar-model-viewer"
+          camera-controls
+          auto-rotate
+          auto-rotate-delay="1000"
+          rotation-per-second="30deg"
+          shadow-intensity="1"
+          shadow-softness="0.8"
+          environment-image="neutral"
+          exposure="1"
+          ar
+          ar-modes="webxr scene-viewer quick-look"
+          ar-scale="auto"
+          ar-placement="floor"
+          loading="eager"
+          reveal="auto"
+        >
+          <!-- AR button slot -->
+          <button slot="ar-button" id="ar-launch-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            Place in Your Room
+          </button>
+
+          <!-- Loading poster -->
+          <div slot="progress-bar" style="display:none;"></div>
+        </model-viewer>
+
+        <!-- No-model fallback (shown when no .glb exists) -->
+        <div id="ar-no-model">
+          <div class="ar-no-model-icon">None</div>
+          <div class="ar-no-model-title">3D Model Coming Soon</div>
+          <div class="ar-no-model-text">A 3D model for this product hasn't been uploaded yet.<br>Check back soon or contact us for a virtual consultation.</div>
+        </div>
+      </div>
+
+      <!-- Controls info bar -->
+      <div class="ar-modal-controls">
+        <span class="ar-control-hint">Drag to rotate</span>
+        <span class="ar-control-hint">Scroll to zoom</span>
+        <span class="ar-control-hint">Two fingers to pan</span>
+        <span class="ar-control-hint mobile" id="ar-mobile-hint">📱 Tap "Place in Room" for AR</span>
+      </div>
+
+      <!-- Marker AR button -->
+      <div class="ar-marker-section">
+        <div>
+          <div class="ar-marker-text-label">Marker AR Mode</div>
+          <div class="ar-marker-text-desc">Print or display the Hiro marker — the 3D model locks onto it and tracks wherever you move it.</div>
+        </div>
+        <button id="open-marker-ar-btn" onclick="openMarkerAR()" class="ar-marker-btn">
+          Launch Marker AR →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Placeholder .glb model URL (a simple chair from Google's model-viewer samples)
+    const PLACEHOLDER_MODEL = 'models/sofa.glb';
+
+    function openARViewer(productId, productName, modelUrl, imageUrl) {
+      const modal    = document.getElementById('ar-modal');
+      const viewer   = document.getElementById('ar-model-viewer');
+      const noModel  = document.getElementById('ar-no-model');
+      const nameEl   = document.getElementById('ar-product-name');
+      const mobileHint = document.getElementById('ar-mobile-hint');
+
+      nameEl.textContent = productName;
+
+      // Use product's modelUrl, fall back to placeholder
+      const src = modelUrl && modelUrl.trim() !== '' ? modelUrl : PLACEHOLDER_MODEL;
+
+      viewer.setAttribute('src', src);
+      viewer.setAttribute('poster', imageUrl);
+      viewer.setAttribute('alt', `3D model of ${productName}`);
+
+      // Show/hide no-model overlay
+      noModel.style.display = 'none';
+      viewer.style.display = 'block';
+
+      // Show AR hint on mobile
+      if (/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)) {
+        mobileHint.style.display = 'flex';
+      }
+
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeARViewer() {
+      const modal  = document.getElementById('ar-modal');
+      const viewer = document.getElementById('ar-model-viewer');
+      modal.style.display = 'none';
+      document.body.style.overflow = '';
+      // Stop the model from loading/animating when closed
+      viewer.removeAttribute('src');
+    }
+
+    // Open dedicated marker AR page
+    function openMarkerAR() {
+      const name  = document.getElementById('ar-product-name').textContent || '';
+      const model = document.getElementById('ar-model-viewer').getAttribute('src') || '';
+      const poster = document.getElementById('ar-model-viewer').getAttribute('poster') || '';
+      const params = new URLSearchParams({ name, model, image: poster });
+      window.open(`/ar-viewer?${params.toString()}`, '_blank');
+    }
+
+    // Close on backdrop click
+    document.getElementById('ar-modal').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('ar-modal')) closeARViewer();
+    });
+
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && document.getElementById('ar-modal').style.display === 'flex') closeARViewer();
+    });
+  </script>
+
+  <script>
+    // Hide nav on scroll down, show on scroll up
+    (function () {
+      const nav = document.querySelector('nav');
+      let lastY = window.scrollY;
+      let ticking = false;
+
+      window.addEventListener('scroll', () => {
+        if (!ticking) {
+          window.requestAnimationFrame(() => {
+            const currentY = window.scrollY;
+            if (currentY > lastY && currentY > 80) {
+              nav.classList.add('nav-hidden');
+            } else if (currentY < lastY) {
+              nav.classList.remove('nav-hidden');
+            }
+            lastY = currentY;
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }, { passive: true });
+    })();
+  </script>
+</body>
+</html>

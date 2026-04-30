@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.png">
+  <link rel="apple-touch-icon" href="/images/logo.png">
+  <title>Manage Orders - MOMOY'S Furniture Admin</title>
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .form-control {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #bdc3c7;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+
+    #orders-table {
+      font-size: 0.9rem;
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    #orders-table td, #orders-table th {
+      padding: 0.5rem;
+      border: 1px solid #ddd;
+      vertical-align: middle;
+    }
+
+    #orders-table button {
+      white-space: nowrap;
+      margin: 0.2rem 0;
+    }
+
+    .map-popup {
+      width: 250px;
+      height: 200px;
+    }
+
+    .leaflet-container {
+      height: 200px;
+      width: 100%;
+      border-radius: 5px;
+    }
+
+    .alert {
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 6px;
+    }
+
+    .alert-success { background-color: #d4edda; color: #155724; }
+    .alert-error { background-color: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-container">
+      <a href="/admin/dashboard" class="nav-brand">
+        <img src="/images/logo.png" alt="Momoy's Furniture Logo" class="nav-logo">
+        <span>Momoy's Furniture</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/admin/dashboard">Dashboard</a></li>
+        <li><a href="/admin/add-product">Add Product</a></li>
+        <li><a href="/admin/manage-orders">Manage Orders</a></li>
+        <li><a href="#" id="logout-btn">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+      <h1>Manage Orders</h1>
+      <button class="btn btn-secondary" onclick="loadAdminOrders()">🔄 Refresh</button>
+    </div>
+    
+    <div class="data-table" style="margin-top: 2rem; overflow-x: auto;">
+      <table id="orders-table">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Date</th>
+            <th>Items</th>
+            <th>Total</th>
+            <th>Delivery Status</th>
+            <th>Payment</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="7" style="text-align: center;">Initializing...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top: 2rem; padding: 1.5rem; background: #ecf0f1; border-radius: 10px;">
+      <h3>Quick Guide:</h3>
+      <ul style="margin: 1rem 0; line-height: 2;">
+        <li><strong>View:</strong> See complete order details</li>
+        <li><strong>Update Status:</strong> Change order delivery status (processing, confirmed, in transit, delivered)</li>
+        <li><strong>Set Location:</strong> Click on the map to update package location for delivery tracking</li>
+      </ul>
+      <p style="color: #7f8c8d; margin-top: 1rem;">
+        <strong>Note:</strong> Once you set a delivery location, customers can track their order in real-time on the delivery map.
+      </p>
+    </div>
+  </div>
+
+  <div id="admin-order-chat-modal" class="chat-modal" aria-hidden="true">
+    <div class="chat-modal-card" role="dialog" aria-modal="true" aria-labelledby="admin-order-chat-title">
+      <div class="chat-modal-header">
+        <div>
+          <div id="admin-order-chat-title" class="chat-modal-title">Order Chat</div>
+          <div id="admin-order-chat-subtitle" class="chat-modal-subtitle">Reply directly to the customer for this order.</div>
+        </div>
+        <button type="button" class="chat-close-btn" onclick="closeAdminOrderChat()" aria-label="Close chat">&times;</button>
+      </div>
+      <div id="admin-order-chat-thread" class="chat-thread">
+        <div class="chat-empty">Loading messages...</div>
+      </div>
+      <form id="admin-order-chat-form" class="chat-modal-form">
+        <textarea id="admin-order-chat-input" placeholder="Send a message to the customer about this order..." maxlength="1000" required></textarea>
+        <div class="chat-form-row">
+          <span class="chat-form-hint">Use this thread for order-specific updates and clarifications.</span>
+          <button type="submit" class="btn btn-primary">Send Message</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <!-- App auth -->
+<!-- Your JS -->
+  <script src="/js/config.js"></script>
+  <script src="/js/firebase-config.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/admin.js"></script>
+  <script src="/js/mobile-nav.js"></script>
+
+  <script>
+    // Ensure admin auth before loading orders
+    let authChecked = false;
+
+    auth.onAuthStateChanged(async (user) => {
+      if (authChecked) return;
+      authChecked = true;
+
+      console.log('Auth state changed:', user ? user.email : 'Not logged in');
+
+      if (!user) {
+        window.location.href = '/login';
+        return;
+      }
+
+      try {
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        const isAdmin = userDoc.exists && userDoc.data().role === 'admin';
+
+        if (!isAdmin) {
+          alert('Access denied. Admin only.');
+          window.location.href = '/';
+          return;
+        }
+
+        // Load orders
+        loadAdminOrders();
+
+      } catch (error) {
+        console.error('Error verifying admin status:', error);
+        alert('Error verifying admin status');
+        window.location.href = '/';
+      }
+    });
+  </script>
+</body>
+</html>

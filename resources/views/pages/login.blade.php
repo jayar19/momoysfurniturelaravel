@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.png">
+  <link rel="apple-touch-icon" href="/images/logo.png">
+  <title>Login - MOMOY'S Furniture</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ── Tab switcher ── */
+    .auth-tabs {
+      display: flex;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.15);
+      padding: 4px;
+      margin-bottom: 2rem;
+      gap: 4px;
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 0.6rem 1rem;
+      border: none;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: transparent;
+      color: rgba(255,255,255,0.7);
+      transition: background 0.25s, color 0.25s;
+      font-family: var(--sans);
+    }
+
+    .auth-tab.active {
+      background: #fff;
+      color: var(--dark);
+    }
+
+    /* ── Form panels ── */
+    .auth-panel {
+      display: none;
+      animation: fadeUp 0.3s ease both;
+    }
+
+    .auth-panel.active { display: block; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Form title ── */
+    .auth-title {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #fff;
+      font-family: var(--serif);
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    /* ── Input styling override for dark form ── */
+    .form-container .form-group label {
+      color: rgba(255,255,255,0.9);
+    }
+
+    .form-container .form-group input {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #fff;
+      border-radius: 8px;
+    }
+
+    .form-container .form-group input::placeholder {
+      color: rgba(255,255,255,0.45);
+    }
+
+    .form-container .form-group input:focus {
+      outline: none;
+      border-color: rgba(255,255,255,0.7);
+      background: rgba(255,255,255,0.22);
+    }
+
+    /* ── Submit button ── */
+    .auth-submit {
+      width: 100%;
+      padding: 0.85rem;
+      background: #fff;
+      color: var(--dark);
+      border: none;
+      border-radius: 999px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      font-family: var(--sans);
+      margin-top: 0.5rem;
+    }
+
+    .auth-submit:hover {
+      background: var(--yellow);
+      transform: translateY(-1px);
+    }
+
+    /* ── Message ── */
+    .auth-message {
+      display: none;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    .auth-message.success { background: rgba(39,174,96,0.25); color: #afffcb; border: 1px solid rgba(39,174,96,0.4); }
+    .auth-message.error   { background: rgba(231,76,60,0.25);  color: #ffbdbd; border: 1px solid rgba(231,76,60,0.4); }
+
+    /* ── Center the form vertically ── */
+    .formcontainer {
+      min-height: calc(100vh - 75px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .form-container {
+      width: 100%;
+      max-width: 420px;
+    }
+  </style>
+</head>
+<body class="formbody">
+
+  <!-- Nav (matching index) -->
+  <nav>
+    <div class="nav-container">
+      <a href="/" class="nav-brand">
+        <img src="/images/logo.png" alt="Momoy's Furniture Logo" class="nav-logo">
+        <span>Momoy's Furniture</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/products">Products</a></li>
+        <li><a href="/offers">Offers</a></li>
+        <li><a href="/services">Services</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="formcontainer">
+    <div class="form-container">
+
+      <!-- Tab Switcher -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login"    onclick="switchTab('login')">Login</button>
+        <button class="auth-tab"        id="tab-register" onclick="switchTab('register')">Sign Up</button>
+      </div>
+
+      <!-- Shared message -->
+      <div class="auth-message" id="auth-message"></div>
+
+      <!-- ── Login Panel ── -->
+      <div class="auth-panel active" id="panel-login">
+        <h2 class="auth-title">Welcome Back</h2>
+        <form id="login-form">
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" required placeholder="your@email.com">
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" required placeholder="Enter your password">
+          </div>
+          <button type="submit" class="auth-submit">Login</button>
+        </form>
+      </div>
+
+      <!-- ── Sign Up Panel ── -->
+      <div class="auth-panel" id="panel-register">
+        <h2 class="auth-title">Create an Account</h2>
+        <form id="register-form">
+          <div class="form-group">
+            <label for="fullName">Full Name</label>
+            <input type="text" id="reg-fullName" required placeholder="Ernesto D. Aninon Jr">
+          </div>
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="reg-email" required placeholder="your@email.com">
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="reg-password" required placeholder="At least 6 characters" minlength="6">
+          </div>
+          <button type="submit" class="auth-submit">Create Account</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="/js/config.js"></script>
+<script src="/js/firebase-config.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/mobile-nav.js"></script>
+
+  <script>
+    // ── Tab switching ──
+    function switchTab(tab) {
+      document.getElementById('panel-login').classList.toggle('active', tab === 'login');
+      document.getElementById('panel-register').classList.toggle('active', tab === 'register');
+      document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+      document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+      hideMessage();
+    }
+
+    // If URL has ?tab=register, open signup directly
+    if (new URLSearchParams(window.location.search).get('tab') === 'register') {
+      switchTab('register');
+    }
+
+    // ── Message helper ──
+    function showAuthMessage(msg, type) {
+      const el = document.getElementById('auth-message');
+      el.textContent = msg;
+      el.className = `auth-message ${type}`;
+      el.style.display = 'block';
+    }
+
+    function hideMessage() {
+      const el = document.getElementById('auth-message');
+      el.style.display = 'none';
+    }
+
+    // ── Login form ──
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = e.target.querySelector('.auth-submit');
+      btn.textContent = 'Logging in...';
+      btn.disabled = true;
+      hideMessage();
+
+      const email    = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      try {
+        const cred = await auth.signInWithEmailAndPassword(email, password);
+
+        // Check role in PostgreSQL-backed profile
+        const userDoc = await db.collection('users').doc(cred.user.uid).get();
+        const role = userDoc.exists ? userDoc.data().role : 'customer';
+
+        showAuthMessage('Login successful! Redirecting...', 'success');
+
+        setTimeout(() => {
+          if (role === 'admin') {
+            window.location.href = '/admin/dashboard';
+          } else {
+            window.location.href = '/products';
+          }
+        }, 800);
+
+      } catch (err) {
+        showAuthMessage(friendlyError(err.code), 'error');
+        btn.textContent = 'Login';
+        btn.disabled = false;
+      }
+    });
+
+    // ── Register form ──
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = e.target.querySelector('.auth-submit');
+      btn.textContent = 'Creating account...';
+      btn.disabled = true;
+      hideMessage();
+
+      const fullName = document.getElementById('reg-fullName').value.trim();
+      const email    = document.getElementById('reg-email').value.trim();
+      const password = document.getElementById('reg-password').value;
+
+      try {
+        const cred = await auth.createUserWithEmailAndPassword(email, password);
+        // Save user profile
+        await db.collection('users').doc(cred.user.uid).set({
+          fullName,
+          email,
+          role: 'customer',
+          createdAt: new Date().toISOString()
+        });
+        showAuthMessage('Account created! Redirecting...', 'success');
+        setTimeout(() => window.location.href = '/', 800);
+      } catch (err) {
+        showAuthMessage(friendlyError(err.code), 'error');
+        btn.textContent = 'Create Account';
+        btn.disabled = false;
+      }
+    });
+
+    // ── Friendly auth error messages ──
+    function friendlyError(code) {
+      const map = {
+        'auth/user-not-found':        'No account found with that email.',
+        'auth/wrong-password':        'Incorrect password. Please try again.',
+        'auth/invalid-email':         'Please enter a valid email address.',
+        'auth/email-already-in-use':  'An account with this email already exists.',
+        'auth/weak-password':         'Password must be at least 6 characters.',
+        'auth/too-many-requests':     'Too many attempts. Please try again later.',
+        // Compatibility code used by the local auth shim
+        'auth/invalid-credential':    'Incorrect email or password. Please try again.',
+        'auth/invalid-login-credentials': 'Incorrect email or password. Please try again.',
+      };
+      return map[code] || `Something went wrong (${code}). Please try again.`;
+    }
+
+    // ── Nav scroll hide ──
+    (function () {
+      const nav = document.querySelector('nav');
+      let lastY = window.scrollY, ticking = false;
+      window.addEventListener('scroll', () => {
+        if (!ticking) {
+          window.requestAnimationFrame(() => {
+            const currentY = window.scrollY;
+            nav.classList.toggle('nav-hidden', currentY > lastY && currentY > 80);
+            if (currentY < lastY) nav.classList.remove('nav-hidden');
+            lastY = currentY;
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }, { passive: true });
+    })();
+  </script>
+</body>
+</html>

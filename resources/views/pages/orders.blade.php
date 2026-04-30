@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.png">
+<link rel="apple-touch-icon" href="/images/logo.png">
+  <title>My Orders - MOMOY'S Furniture</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .order-empty {
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+    
+    .order-empty img {
+      width: 200px;
+      opacity: 0.5;
+      margin-bottom: 2rem;
+    }
+    
+    .order-timeline {
+      display: flex;
+      justify-content: space-between;
+      margin: 1.5rem 0;
+      padding: 0 1rem;
+      position: relative;
+    }
+    
+    .order-timeline::before {
+      content: '';
+      position: absolute;
+      top: 15px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #ecf0f1;
+      z-index: 0;
+    }
+    
+    .timeline-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+      background: white;
+      padding: 0 0.5rem;
+    }
+    
+    .timeline-dot {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #ecf0f1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+      color: #95a5a6;
+    }
+    
+    .timeline-dot.active {
+      background: #27ae60;
+      color: white;
+    }
+    
+    .timeline-dot.current {
+      background: #3498db;
+      color: white;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    
+    .timeline-label {
+      font-size: 0.8rem;
+      color: #7f8c8d;
+      text-align: center;
+    }
+    
+    .order-items-list {
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 5px;
+      margin: 1rem 0;
+    }
+    
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #ecf0f1;
+    }
+    
+    .order-item:last-child {
+      border-bottom: none;
+    }
+    
+    .payment-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    
+    .payment-partial {
+      background: #fff3cd;
+      color: #856404;
+    }
+    
+    .payment-full {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .order-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+      .order-timeline {
+        flex-direction: column;
+        align-items: flex-start;
+        padding-left: 2rem;
+      }
+      
+      .order-timeline::before {
+        left: 15px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        height: auto;
+      }
+      
+      .timeline-step {
+        flex-direction: row;
+        margin-bottom: 1rem;
+      }
+      
+      .timeline-dot {
+        margin-right: 1rem;
+        margin-bottom: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-container">
+      <a href="/" class="nav-brand">
+        <img src="/images/logo.png" alt="Momoy's Furniture Logo" class="nav-logo">
+        <span>Momoy's Furniture</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/products">Products</a></li>
+        <li><a href="/cart">Cart (<span id="cart-count">0</span>)</a></li>
+        <li><a href="/orders">My Orders</a></li>
+        <li><a href="#" id="logout-btn">Log Out</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+      <h1>My Orders</h1>
+      <button class="btn btn-secondary" onclick="loadUserOrders()">🔄 Refresh</button>
+    </div>
+    
+    <div id="message" style="display: none; margin: 1rem 0;"></div>
+    
+    <div id="orders-container">
+      <div class="spinner"></div>
+    </div>
+  </div>
+<script src="/js/config.js"></script>
+  <script src="/js/firebase-config.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/orders.js"></script>
+  <script src="/js/mobile-nav.js"></script>
+  <script>
+    // Handle logout button
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        logoutUser();
+      });
+    }
+  </script>
+</body>
+</html>

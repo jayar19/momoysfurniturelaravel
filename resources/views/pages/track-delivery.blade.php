@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Track Your Delivery</title>
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+  <!-- Optional: Tailwind / your CSS -->
+  <link rel="stylesheet" href="/css/styles.css">
+
+  <style>
+    #map {
+      height: 500px;
+      width: 100%;
+      border-radius: 8px;
+      margin-top: 1rem;
+    }
+    .alert {
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 6px;
+    }
+    .alert-success { background-color: #d4edda; color: #155724; }
+    .alert-error { background-color: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body class="bg-gray-100 font-sans">
+
+  <header class="p-4 bg-blue-600 text-white">
+    <h1 class="text-2xl font-bold">Track Your Delivery</h1>
+  </header>
+
+  <main class="p-4 max-w-4xl mx-auto">
+    <!-- Order Info -->
+    <div id="order-info" class="bg-white p-4 rounded shadow"></div>
+
+    <!-- Tracking Status -->
+    <div id="tracking-status"></div>
+
+    <!-- Map -->
+    <div id="map"></div>
+
+    <!-- Back Button -->
+    <div class="mt-4">
+      <a href="/orders" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Back to Orders</a>
+    </div>
+  </main>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <!-- App Auth -->
+  <script src="/js/config.js"></script>
+  <script src="/js/firebase-config.js"></script>
+
+  <!-- Tracking JS -->
+  <script src="/js/tracking.js"></script>
+
+  <script>
+    // Wait until the map container is ready
+    document.addEventListener('DOMContentLoaded', () => {
+      if (document.getElementById('map')) {
+        // tracking.js handles map initialization and auth
+      }
+    });
+  </script>
+</body>
+</html>

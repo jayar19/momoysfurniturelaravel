@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Down Payment - MOMOY'S Furniture</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .payment-wrap {
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    .payment-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    .payment-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .payment-grid p {
+      margin: 0.2rem 0;
+    }
+
+    .payment-label {
+      font-size: 0.85rem;
+      color: #7f8c8d;
+    }
+
+    .payment-value {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #2c3e50;
+    }
+
+    .payment-value.highlight {
+      color: #27ae60;
+    }
+
+    .paymongo-note {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 10px;
+      background: #f8fbff;
+      border: 1px solid #d6e9ff;
+      color: #2c3e50;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-container">
+      <a href="/" class="nav-brand">
+        <img src="/images/logo.png" alt="Momoy's Furniture Logo" class="nav-logo">
+        <span>Momoy's Furniture</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/products">Products</a></li>
+        <li><a href="/cart">Cart (<span id="cart-count">0</span>)</a></li>
+        <li><a href="/orders">My Orders</a></li>
+        <li><a href="#" id="logout-btn">Log Out</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container payment-wrap">
+    <h1>QRPH Down Payment</h1>
+    <div id="message" style="display: none; margin: 1rem 0;"></div>
+
+    <div id="payment-loading" class="payment-card" style="text-align: center;">
+      <div class="spinner"></div>
+      <p style="margin-top: 1rem; color: #7f8c8d;">Loading order details...</p>
+    </div>
+
+    <div id="payment-content" style="display: none;">
+      <div class="payment-card">
+        <h3 style="margin-bottom: 0.75rem;">Order Summary</h3>
+        <p style="margin: 0.3rem 0;"><strong>Order ID:</strong> <span id="order-id-text">-</span></p>
+        <p style="margin: 0.3rem 0;"><strong>Shipping Address:</strong></p>
+        <p id="shipping-address-text" style="white-space: pre-line; color: #555; margin-top: 0.2rem;">-</p>
+
+        <div class="payment-grid">
+          <div>
+            <p class="payment-label">Total Amount</p>
+            <p class="payment-value" id="total-amount-text">P0</p>
+          </div>
+          <div>
+            <p class="payment-label">Down Payment (30%)</p>
+            <p class="payment-value highlight" id="down-payment-text">P0</p>
+          </div>
+          <div>
+            <p class="payment-label">Payment Status</p>
+            <p class="payment-value" id="payment-status-text">Pending</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="payment-card">
+        <h3 style="margin-bottom: 0.75rem;">Secure QRPH Checkout</h3>
+        <p style="margin: 0.3rem 0;">
+          PayMongo will open a secure hosted checkout page where the customer can scan a QRPH code and pay the exact
+          down payment amount for this order.
+        </p>
+        <div class="paymongo-note">
+          <strong>What happens next:</strong>
+          <p style="margin: 0.5rem 0 0;">
+            Tap the button below, complete the payment on PayMongo's checkout page, then you will be redirected back
+            here and we will refresh the order status.
+          </p>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
+          <button id="pay-with-gcash-btn" class="btn btn-primary">Pay Using QRPH</button>
+          <button id="refresh-payment-btn" class="btn btn-secondary">Refresh Payment Status</button>
+          <a href="/orders" class="btn btn-secondary">Back to My Orders</a>
+        </div>
+      </div>
+    </div>
+  </div>
+<script src="/js/config.js"></script>
+  <script src="/js/firebase-config.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/products.js"></script>
+  <script src="/js/payment.js"></script>
+  <script src="/js/mobile-nav.js"></script>
+</body>
+</html>

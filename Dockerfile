@@ -1,8 +1,8 @@
 FROM php:8.3-cli
 
-# Install dependencies
+# Install dependencies (FIXED)
 RUN apt-get update && apt-get install -y \
-    unzip zip git curl libpq-dev libzip-dev \
+    unzip zip git curl libpq-dev libzip-dev libonig-dev \
     && docker-php-ext-install \
         pdo pdo_pgsql mbstring exif pcntl bcmath zip
 

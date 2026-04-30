@@ -7,12 +7,11 @@
   <link rel="apple-touch-icon" href="/images/logo.png">
   <title>Login - MOMOY'S Furniture</title>
   <link rel="stylesheet" href="/css/styles.css">
-  {{-- CSRF meta tag for AJAX requests --}}
-  <meta name="csrf-token" content="{{ csrf_token() }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
+    /* ── Tab switcher ── */
     .auth-tabs {
       display: flex;
       border-radius: 999px;
@@ -21,6 +20,7 @@
       margin-bottom: 2rem;
       gap: 4px;
     }
+
     .auth-tab {
       flex: 1;
       padding: 0.6rem 1rem;
@@ -34,19 +34,26 @@
       transition: background 0.25s, color 0.25s;
       font-family: var(--sans);
     }
+
     .auth-tab.active {
       background: #fff;
       color: var(--dark);
     }
+
+    /* ── Form panels ── */
     .auth-panel {
       display: none;
       animation: fadeUp 0.3s ease both;
     }
+
     .auth-panel.active { display: block; }
+
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(10px); }
       to   { opacity: 1; transform: translateY(0); }
     }
+
+    /* ── Form title ── */
     .auth-title {
       text-align: center;
       margin-bottom: 1.5rem;
@@ -55,19 +62,30 @@
       font-size: 1.4rem;
       font-weight: 700;
     }
-    .form-container .form-group label { color: rgba(255,255,255,0.9); }
+
+    /* ── Input styling override for dark form ── */
+    .form-container .form-group label {
+      color: rgba(255,255,255,0.9);
+    }
+
     .form-container .form-group input {
       background: rgba(255,255,255,0.15);
       border: 1px solid rgba(255,255,255,0.3);
       color: #fff;
       border-radius: 8px;
     }
-    .form-container .form-group input::placeholder { color: rgba(255,255,255,0.45); }
+
+    .form-container .form-group input::placeholder {
+      color: rgba(255,255,255,0.45);
+    }
+
     .form-container .form-group input:focus {
       outline: none;
       border-color: rgba(255,255,255,0.7);
       background: rgba(255,255,255,0.22);
     }
+
+    /* ── Submit button ── */
     .auth-submit {
       width: 100%;
       padding: 0.85rem;
@@ -82,8 +100,13 @@
       font-family: var(--sans);
       margin-top: 0.5rem;
     }
-    .auth-submit:hover { background: var(--yellow); transform: translateY(-1px); }
-    .auth-submit:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+    .auth-submit:hover {
+      background: var(--yellow);
+      transform: translateY(-1px);
+    }
+
+    /* ── Message ── */
     .auth-message {
       display: none;
       padding: 0.75rem 1rem;
@@ -92,10 +115,11 @@
       font-size: 0.9rem;
       text-align: center;
     }
+
     .auth-message.success { background: rgba(39,174,96,0.25); color: #afffcb; border: 1px solid rgba(39,174,96,0.4); }
     .auth-message.error   { background: rgba(231,76,60,0.25);  color: #ffbdbd; border: 1px solid rgba(231,76,60,0.4); }
-    .auth-message.show    { display: block; }
-    .field-error { color: #ffbdbd; font-size: 0.8rem; margin-top: 0.25rem; display: block; }
+
+    /* ── Center the form vertically ── */
     .formcontainer {
       min-height: calc(100vh - 75px);
       display: flex;
@@ -103,11 +127,16 @@
       justify-content: center;
       padding: 2rem 1rem;
     }
-    .form-container { width: 100%; max-width: 420px; }
+
+    .form-container {
+      width: 100%;
+      max-width: 420px;
+    }
   </style>
 </head>
 <body class="formbody">
 
+  <!-- Nav (matching index) -->
   <nav>
     <div class="nav-container">
       <a href="/" class="nav-brand">
@@ -125,74 +154,57 @@
   <div class="formcontainer">
     <div class="form-container">
 
+      <!-- Tab Switcher -->
       <div class="auth-tabs">
-        <button type="button" class="auth-tab {{ $tab === 'login' ? 'active' : '' }}" id="tab-login" onclick="switchTab('login')">Login</button>
-        <button type="button" class="auth-tab {{ $tab === 'register' ? 'active' : '' }}" id="tab-register" onclick="switchTab('register')">Sign Up</button>
+        <button class="auth-tab active" id="tab-login"    onclick="switchTab('login')">Login</button>
+        <button class="auth-tab"        id="tab-register" onclick="switchTab('register')">Sign Up</button>
       </div>
 
-      {{-- Shared flash message (from Laravel session) --}}
-      <div class="auth-message {{ session('auth_status') ? 'show ' . session('auth_status') : '' }}" id="auth-message">
-        {{ session('auth_message') }}
-      </div>
+      <!-- Shared message -->
+      <div class="auth-message" id="auth-message"></div>
 
-      {{-- ── Login Panel ── --}}
-      <div class="auth-panel {{ $tab === 'login' ? 'active' : '' }}" id="panel-login">
+      <!-- ── Login Panel ── -->
+      <div class="auth-panel active" id="panel-login">
         <h2 class="auth-title">Welcome Back</h2>
-
-        {{-- BUG FIX: method="POST" + action + @csrf --}}
-        <form id="login-form" method="POST" action="{{ route('auth.login.submit') }}">
-          @csrf
+        <form id="login-form">
           <div class="form-group">
             <label for="email">Email Address</label>
-            <input type="email" id="email" name="email" required
-                   placeholder="your@email.com"
-                   value="{{ old('email') }}">
-            @error('email') <span class="field-error">{{ $message }}</span> @enderror
+            <input type="email" id="email" required placeholder="your@email.com">
           </div>
           <div class="form-group">
             <label for="password">Password</label>
-            <input type="password" id="password" name="password" required placeholder="Enter your password">
-            @error('password') <span class="field-error">{{ $message }}</span> @enderror
+            <input type="password" id="password" required placeholder="Enter your password">
           </div>
-          <button type="submit" class="auth-submit" id="login-btn">Login</button>
+          <button type="submit" class="auth-submit">Login</button>
         </form>
       </div>
 
-      {{-- ── Sign Up Panel ── --}}
-      <div class="auth-panel {{ $tab === 'register' ? 'active' : '' }}" id="panel-register">
+      <!-- ── Sign Up Panel ── -->
+      <div class="auth-panel" id="panel-register">
         <h2 class="auth-title">Create an Account</h2>
-
-        {{-- BUG FIX: method="POST" + action + @csrf --}}
-        <form id="register-form" method="POST" action="{{ route('auth.register.submit') }}">
-          @csrf
+        <form id="register-form">
           <div class="form-group">
-            <label for="reg-fullName">Full Name</label>
-            <input type="text" id="reg-fullName" name="fullName" required
-                   placeholder="Ernesto D. Aninon Jr"
-                   value="{{ old('fullName') }}">
-            @error('fullName') <span class="field-error">{{ $message }}</span> @enderror
+            <label for="fullName">Full Name</label>
+            <input type="text" id="reg-fullName" required placeholder="Ernesto D. Aninon Jr">
           </div>
           <div class="form-group">
-            <label for="reg-email">Email Address</label>
-            <input type="email" id="reg-email" name="email" required
-                   placeholder="your@email.com"
-                   value="{{ old('email') }}">
-            @error('email') <span class="field-error">{{ $message }}</span> @enderror
+            <label for="email">Email Address</label>
+            <input type="email" id="reg-email" required placeholder="your@email.com">
           </div>
           <div class="form-group">
-            <label for="reg-password">Password</label>
-            <input type="password" id="reg-password" name="password" required
-                   placeholder="At least 6 characters" minlength="6">
-            @error('password') <span class="field-error">{{ $message }}</span> @enderror
+            <label for="password">Password</label>
+            <input type="password" id="reg-password" required placeholder="At least 6 characters" minlength="6">
           </div>
-          <button type="submit" class="auth-submit" id="register-btn">Create Account</button>
+          <button type="submit" class="auth-submit">Create Account</button>
         </form>
       </div>
 
     </div>
   </div>
 
-  {{-- REMOVED: firebase-config.js, auth.js (not needed for Laravel auth) --}}
+  <script src="/js/config.js"></script>
+<script src="/js/firebase-config.js"></script>
+  <script src="/js/auth.js"></script>
   <script src="/js/mobile-nav.js"></script>
 
   <script>
@@ -205,30 +217,104 @@
       hideMessage();
     }
 
+    // If URL has ?tab=register, open signup directly
+    if (new URLSearchParams(window.location.search).get('tab') === 'register') {
+      switchTab('register');
+    }
+
+    // ── Message helper ──
     function showAuthMessage(msg, type) {
       const el = document.getElementById('auth-message');
       el.textContent = msg;
-      el.className = `auth-message show ${type}`;
+      el.className = `auth-message ${type}`;
+      el.style.display = 'block';
     }
 
     function hideMessage() {
       const el = document.getElementById('auth-message');
-      el.className = 'auth-message';
-      el.textContent = '';
+      el.style.display = 'none';
     }
 
-    // Show loading state on submit (UX only — form still does a normal POST)
-    document.getElementById('login-form').addEventListener('submit', function () {
-      const btn = document.getElementById('login-btn');
+    // ── Login form ──
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = e.target.querySelector('.auth-submit');
       btn.textContent = 'Logging in...';
       btn.disabled = true;
+      hideMessage();
+
+      const email    = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      try {
+        const cred = await auth.signInWithEmailAndPassword(email, password);
+
+        // Check role in PostgreSQL-backed profile
+        const userDoc = await db.collection('users').doc(cred.user.uid).get();
+        const role = userDoc.exists ? userDoc.data().role : 'customer';
+
+        showAuthMessage('Login successful! Redirecting...', 'success');
+
+        setTimeout(() => {
+          if (role === 'admin') {
+            window.location.href = '/admin/dashboard';
+          } else {
+            window.location.href = '/products';
+          }
+        }, 800);
+
+      } catch (err) {
+        showAuthMessage(friendlyError(err.code), 'error');
+        btn.textContent = 'Login';
+        btn.disabled = false;
+      }
     });
 
-    document.getElementById('register-form').addEventListener('submit', function () {
-      const btn = document.getElementById('register-btn');
+    // ── Register form ──
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = e.target.querySelector('.auth-submit');
       btn.textContent = 'Creating account...';
       btn.disabled = true;
+      hideMessage();
+
+      const fullName = document.getElementById('reg-fullName').value.trim();
+      const email    = document.getElementById('reg-email').value.trim();
+      const password = document.getElementById('reg-password').value;
+
+      try {
+        const cred = await auth.createUserWithEmailAndPassword(email, password);
+        // Save user profile
+        await db.collection('users').doc(cred.user.uid).set({
+          fullName,
+          email,
+          role: 'customer',
+          createdAt: new Date().toISOString()
+        });
+        showAuthMessage('Account created! Redirecting...', 'success');
+        setTimeout(() => window.location.href = '/', 800);
+      } catch (err) {
+        showAuthMessage(friendlyError(err.code), 'error');
+        btn.textContent = 'Create Account';
+        btn.disabled = false;
+      }
     });
+
+    // ── Friendly auth error messages ──
+    function friendlyError(code) {
+      const map = {
+        'auth/user-not-found':        'No account found with that email.',
+        'auth/wrong-password':        'Incorrect password. Please try again.',
+        'auth/invalid-email':         'Please enter a valid email address.',
+        'auth/email-already-in-use':  'An account with this email already exists.',
+        'auth/weak-password':         'Password must be at least 6 characters.',
+        'auth/too-many-requests':     'Too many attempts. Please try again later.',
+        // Compatibility code used by the local auth shim
+        'auth/invalid-credential':    'Incorrect email or password. Please try again.',
+        'auth/invalid-login-credentials': 'Incorrect email or password. Please try again.',
+      };
+      return map[code] || `Something went wrong (${code}). Please try again.`;
+    }
 
     // ── Nav scroll hide ──
     (function () {

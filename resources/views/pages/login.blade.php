@@ -44,7 +44,7 @@
             <!-- Login Panel -->
             <div class="auth-panel active" id="panel-login">
                 <h2 class="auth-title">Welcome Back</h2>
-                <form id="login-form">
+                <form id="login-form" method="POST" action="/api/auth/login">
                     <div class="form-group">
                         <label>Email Address</label>
                         <input type="email" id="email" required placeholder="your@email.com">
@@ -60,7 +60,7 @@
             <!-- Register Panel -->
             <div class="auth-panel" id="panel-register">
                 <h2 class="auth-title">Create an Account</h2>
-                <form id="register-form">
+                <form id="register-form" method="POST" action="/api/auth/register">
                     <div class="form-group">
                         <label>Full Name</label>
                         <input type="text" id="reg-fullName" placeholder="Ernesto D. Aninon Jr">

@@ -202,11 +202,6 @@
     </div>
   </div>
 
-  <script src="/js/config.js"></script>
-<script src="/js/firebase-config.js"></script>
-  <script src="/js/auth.js"></script>
-  <script src="/js/mobile-nav.js"></script>
-
   <script>
     // ── Tab switching ──
     function switchTab(tab) {
@@ -235,71 +230,97 @@
       el.style.display = 'none';
     }
 
-    // ── Login form ──
-    document.getElementById('login-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const btn = e.target.querySelector('.auth-submit');
-      btn.textContent = 'Logging in...';
-      btn.disabled = true;
-      hideMessage();
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
 
-      const email    = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
+  const btn = e.target.querySelector('.auth-submit');
+  btn.textContent = 'Logging in...';
+  btn.disabled = true;
+  hideMessage();
 
-      try {
-        const cred = await auth.signInWithEmailAndPassword(email, password);
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
 
-        // Check role in PostgreSQL-backed profile
-        const userDoc = await db.collection('users').doc(cred.user.uid).get();
-        const role = userDoc.exists ? userDoc.data().role : 'customer';
-
-        showAuthMessage('Login successful! Redirecting...', 'success');
-
-        setTimeout(() => {
-          if (role === 'admin') {
-            window.location.href = '/admin/dashboard';
-          } else {
-            window.location.href = '/products';
-          }
-        }, 800);
-
-      } catch (err) {
-        showAuthMessage(friendlyError(err.code), 'error');
-        btn.textContent = 'Login';
-        btn.disabled = false;
-      }
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, password })
     });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || 'Login failed');
+    }
+
+    // Save token (important)
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+
+    showAuthMessage('Login successful! Redirecting...', 'success');
+
+    setTimeout(() => {
+      if (data.user.role === 'admin') {
+        window.location.href = '/admin/dashboard';
+      } else {
+        window.location.href = '/products';
+      }
+    }, 800);
+
+  } catch (err) {
+    showAuthMessage(err.message, 'error');
+    btn.textContent = 'Login';
+    btn.disabled = false;
+  }
+});
 
     // ── Register form ──
     document.getElementById('register-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const btn = e.target.querySelector('.auth-submit');
-      btn.textContent = 'Creating account...';
-      btn.disabled = true;
-      hideMessage();
+  e.preventDefault();
 
-      const fullName = document.getElementById('reg-fullName').value.trim();
-      const email    = document.getElementById('reg-email').value.trim();
-      const password = document.getElementById('reg-password').value;
+  const btn = e.target.querySelector('.auth-submit');
+  btn.textContent = 'Creating account...';
+  btn.disabled = true;
+  hideMessage();
 
-      try {
-        const cred = await auth.createUserWithEmailAndPassword(email, password);
-        // Save user profile
-        await db.collection('users').doc(cred.user.uid).set({
-          fullName,
-          email,
-          role: 'customer',
-          createdAt: new Date().toISOString()
-        });
-        showAuthMessage('Account created! Redirecting...', 'success');
-        setTimeout(() => window.location.href = '/', 800);
-      } catch (err) {
-        showAuthMessage(friendlyError(err.code), 'error');
-        btn.textContent = 'Create Account';
-        btn.disabled = false;
-      }
+  const fullName = document.getElementById('reg-fullName').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const password = document.getElementById('reg-password').value;
+
+  try {
+    const res = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name: fullName,
+        email,
+        password
+      })
     });
 
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || 'Registration failed');
+    }
+
+    showAuthMessage('Account created! Redirecting...', 'success');
+
+    setTimeout(() => {
+      window.location.href = '/login';
+    }, 800);
+
+  } catch (err) {
+    showAuthMessage(err.message, 'error');
+    btn.textContent = 'Create Account';
+    btn.disabled = false;
+  }
+});
     // ── Friendly auth error messages ──
     function friendlyError(code) {
       const map = {

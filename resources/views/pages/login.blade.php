@@ -110,18 +110,22 @@
             hideMessage();
 
             try {
-                const response = await fetch('/api/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify({
-                        email: document.getElementById('email').value,
-                        password: document.getElementById('password').value
-                    })
-                });
+                // --- Update both Register and Login fetch calls ---
+const res = await fetch('/api/auth/login', { // Use relative path!
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+    },
+    body: JSON.stringify({ 
+        fullName: document.getElementById('reg-fullName').value,
+        email: document.getElementById('reg-email').value,
+        password: document.getElementById('reg-password').value
+    })
+});
 
-                const data = await response.json();
-
-                if (!response.ok) {
+                if (!res.ok) {
                     // Your controller returns 'error' key for invalid credentials
                     throw new Error(data.error || (data.errors ? Object.values(data.errors).flat()[0] : 'Login failed'));
                 }
@@ -148,17 +152,20 @@
             hideMessage();
 
             try {
-                const response = await fetch('/api/auth/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify({
-                        fullName: document.getElementById('reg-fullName').value, // Matches your Controller $data
-                        email: document.getElementById('reg-email').value,
-                        password: document.getElementById('reg-password').value
-                    })
-                });
-
-                const data = await response.json();
+                // --- Update both Register and Login fetch calls ---
+const res = await fetch('/api/auth/register', { // Use relative path!
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+    },
+    body: JSON.stringify({ 
+        fullName: document.getElementById('reg-fullName').value,
+        email: document.getElementById('reg-email').value,
+        password: document.getElementById('reg-password').value
+    })
+});
 
                 if (!response.ok) {
                     // Laravel standard validation uses 'errors' object

@@ -1,30 +1,29 @@
-FROM php:8.2-cli
+FROM php:8.3-cli
 
-# Install system dependencies
+# Install dependencies
 RUN apt-get update && apt-get install -y \
-    unzip zip git curl libpq-dev \
-    && docker-php-ext-install pdo pdo_pgsql
+    unzip zip git curl libpq-dev libzip-dev \
+    && docker-php-ext-install \
+        pdo pdo_pgsql mbstring exif pcntl bcmath zip
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Set working directory
 WORKDIR /var/www
 
-# Copy project files
+# Copy files
 COPY . .
 
 # Install PHP dependencies
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-# Install Node + build assets
+# Install Node.js
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get install -y nodejs \
-    && npm install \
-    && npm run build
+    && apt-get install -y nodejs
 
-# Expose port
+# Build frontend
+RUN npm install && npm run build
+
 EXPOSE 10000
 
-# Run Laravel
-CMD CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=10000
+CMD php artisan serve --host=0.0.0.0 --port=10000
